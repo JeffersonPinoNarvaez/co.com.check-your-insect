@@ -24,9 +24,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region
+#region dependency injection
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
-#endregion
+//builder.Services.AddHostedService<ImageProcessingService>();
+#endregion dependency injection
 
 var app = builder.Build();
 
