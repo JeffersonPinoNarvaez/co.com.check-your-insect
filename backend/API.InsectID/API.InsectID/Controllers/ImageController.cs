@@ -2,6 +2,7 @@
 using APIInsectID.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
+using System.Threading;
 
 namespace API.InsectID.Controllers
 {
@@ -16,90 +17,44 @@ namespace API.InsectID.Controllers
             _imageRepository = imageRepository;
         }
 
-
-        [HttpPost("ObtenerMetadata")]
-        public ActionResult<string> ObtenerMetadata()
+        [HttpPost("PostImage")]
+        public async Task<IActionResult> PostImage(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Archivo no válido");
+            }
+
             try
             {
-                var archivo = Request.Form.Files["archivo"];
-
-                // Verificar que se haya enviado un archivo
-                if (archivo != null && archivo.Length > 0)
+                // Leer los bytes del archivo
+                byte[] fileBytes;
+                using (var memoryStream = new MemoryStream())
                 {
-                    // Verificar que el archivo sea una imagen
-                    if (archivo.ContentType.StartsWith("image/"))
-                    {
-                        // Obtener la metadata de la imagen
-                        var metadata = ObtenerMetadataImagen(archivo);
+                    await file.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
 
-                        // Puedes retornar la metadata en el formato que desees
-                        return Ok(new { StatusCode = 200, Response = $"{metadata}" });
-                    }
-                    else
-                    {
-                        return BadRequest(new { StatusCode = 400, Response = "El archivo no es una imagen válida." });
-                    }
-                }
-                else
+                // Crear el objeto ImageModel
+                var imageModel = new ImageModel
                 {
-                    return BadRequest(new { StatusCode = 400, Response = "No se ha enviado ningún archivo." });
-                }
+                    Contain = fileBytes,
+                    Name = Path.GetFileNameWithoutExtension(file.FileName),
+                    Extension = file.ContentType,
+                };
+
+                // Llamar al método para guardar la imagen en la base de datos
+                var result = await _imageRepository.GuardarImagenBD(imageModel);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { StatusCode = 500, Response = $"Error interno del servidor: {ex.Message}" });
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
 
-        [HttpPost("GuardarImagen")]
-        public ActionResult<string> GuardarImagen()
-        {
-            try
-            {
-                var archivo = Request.Form.Files["archivo"];
 
-                if (archivo != null && archivo.Length > 0)
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        archivo.CopyTo(memoryStream);
-                        var bytes = memoryStream.ToArray();
-
-                        // Guardar en la base de datos
-                        var imagenModel = new ImageModel { Bytes = bytes };
-                        // Aquí deberías usar tu contexto de base de datos para agregar y guardar el modelo
-                        // dbContext.Imagenes.Add(imagenModel);
-                        // dbContext.SaveChanges();
-                        return Ok(new { StatusCode = 200, Response = $"Imagen guardada exitosamente en la base de datos. {archivo.FileName}, {archivo.Headers}, {archivo.ContentType}" });
-                    }
-                }
-                else
-                {
-                    return BadRequest(new { StatusCode = 400, Response = "El archivo no es una imagen válida." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { StatusCode = 500, Response = $"Error interno del servidor: {ex.Message}" });
-            }
-        }
-
-        #region private methods
-        private string ObtenerMetadataImagen(IFormFile archivo)
-        {
-            // Convertir el archivo a un objeto Image
-            using (var imagen = Image.FromStream(archivo.OpenReadStream()))
-            {
-                // Obtener la metadata de la imagen
-                var metadata = $"Ancho: {imagen.Width}, Alto: {imagen.Height}, Formato: {imagen.RawFormat}, Nombre:{archivo.FileName}";
-
-                // Puedes agregar más información de la metadata según tus necesidades
-
-                return metadata;
-            }
-        }
-        #endregion private methods
 
     }
 }

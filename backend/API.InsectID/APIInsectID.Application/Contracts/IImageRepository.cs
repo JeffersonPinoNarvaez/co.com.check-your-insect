@@ -1,4 +1,5 @@
 ﻿using APIInsectID.Application.Models;
+using APIInsectID.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,6 @@ namespace APIInsectID.Application.Contracts
 {
     public interface IImageRepository
     {
-        ImageModel GetImageMetadata(byte[] imageData);
-        //void SaveImageMetadata(ImageMetaData imageMetadata);
+        Task<GalleriesEntity> GuardarImagenBD(ImageModel request);
     }
 }

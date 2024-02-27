@@ -1,11 +1,5 @@
 ﻿using APIInsectID.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace APIInsectID.Infrastructure.Persistence
 {
@@ -20,7 +14,7 @@ namespace APIInsectID.Infrastructure.Persistence
         {
         }
 
-        public virtual DbSet<ImageEntity> Image { get; set; }
+        public virtual DbSet<GalleriesEntity> Galleries { get; set; }
 
     }
 }
