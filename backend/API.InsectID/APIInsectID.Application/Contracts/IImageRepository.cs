@@ -10,6 +10,6 @@ namespace APIInsectID.Application.Contracts
 {
     public interface IImageRepository
     {
-        Task<GalleriesEntity> GuardarImagenBD(ImageModel request);
+        Task<ResultClasificationEntity> GuardarImagenBD(ImageModel request);
     }
 }

@@ -15,7 +15,7 @@ namespace APIInsectID.Infrastructure.Repository
             _dbContext = dbContext;
         }
 
-        public async Task<GalleriesEntity> GuardarImagenBD(ImageModel request)
+        public async Task<ResultClasificationEntity> GuardarImagenBD(ImageModel request)
         {
             var arch = new GalleriesEntity()
             {
@@ -30,7 +30,7 @@ namespace APIInsectID.Infrastructure.Repository
             _dbContext.Galleries.Add(arch);
 
             var resultado = await _dbContext.SaveChangesAsync();
-            GalleriesEntity? resultadoConsulta = null;
+            ResultClasificationEntity? resultadoConsulta = null;
 
             if (resultado > 0)
             {
@@ -52,7 +52,7 @@ namespace APIInsectID.Infrastructure.Repository
         }
 
         // Método de ejemplo para simular una consulta en segundo plano
-        private async Task<GalleriesEntity> RealizarConsultaAsync(int id)
+        private async Task<ResultClasificationEntity> RealizarConsultaAsync(int id)
         {
             int intentosMaximos = 99999999; // Número máximo de intentos
             int intervaloEntreIntentosSegundos = 1; // Intervalo entre intentos en segundos
@@ -68,9 +68,12 @@ namespace APIInsectID.Infrastructure.Repository
                     // Se encontró un resultado que cumple con la condición
 
                     // Realizar otro select para obtener la entidad completa
-                    var entidadCompleta = await _dbContext.Galleries
-                        .Where(g => g.Id == id)
-                        .FirstOrDefaultAsync();
+                    var entidadCompleta = await _dbContext.ResultClassification
+                    .Include(r => r.GalleriesEntity) // Carga la propiedad de navegación GalleryEntity
+                    .Where(r => r.GalleriesEntityId == id)
+                    .FirstOrDefaultAsync();
+
+
 
                     return entidadCompleta;
                 }
