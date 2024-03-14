@@ -15,6 +15,7 @@ namespace APIInsectID.Infrastructure.Persistence
         }
 
         public virtual DbSet<GalleriesEntity> Galleries { get; set; }
+        public virtual DbSet<ResultClasificationEntity> ResultClassification { get; set; }
 
     }
 }
