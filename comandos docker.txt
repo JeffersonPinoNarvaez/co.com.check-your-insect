@@ -1,8 +1,11 @@
-
-Comandos para construir imagen y contenedor de ML MODEL
+Comandos para construir imagen y contenedor de ML MODEL:
+Paso 1: Debemos de pararnos en la ruta del Dockerfile
+Paso 2: Aplicar los comandos
 docker build -t insectid/ia .
 docker run -d --name insectid-mlcontainer insectid/ia:latest
 
 Comandos para construir imagen y contenedor de API Backend:
+Paso 1: Debemos de pararnos en la ruta del archivo .sln que es la solucion .net
+Paso 2: Aplicar los comandos en donde despues de -f colocaremos la ruta en la que se encuentra nuestro Dockerfile
 docker build -f "C:\Users\SkeltonPC\Documents\CURSOS 2024 ESP IA\DESARROLLO PROYECTOS IA\Proyecto final\co.com.check-your-insect\backend\API.InsectID\API.InsectID\Dockerfile" -t apiinsectid/ia .
 docker run -d --name insectid-apicontainer -p 7089:80 apiinsectid/ia:latest
