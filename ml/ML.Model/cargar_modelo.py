@@ -16,12 +16,12 @@ import io
 import json
 
 # Check our folder and import the model with best validation accuracy
-loaded_best_model = keras.models.load_model("./model_01-0.94.h5")
+loaded_best_model = keras.models.load_model("./vgg16_bestmodel6.h5")
 
 # Custom function to load and predict label for the image
 def predict(img_rel_path):
     # Import Image from the path with size of (300, 300)
-    img = image.load_img(img_rel_path, target_size=(300, 300))
+    img = image.load_img(img_rel_path, target_size=(224, 224))
 
     # Convert Image to a numpy array
     img = image.img_to_array(img, dtype=np.uint8)
@@ -33,7 +33,7 @@ def predict(img_rel_path):
     p = loaded_best_model.predict(img[np.newaxis, ...])
 
     # Label array
-    labels = {0: 'Butterfly', 1: 'Dragonfly', 2: 'Grasshopper', 3: 'Ladybird', 4: 'Mosquito'}
+    labels = {0: 'Bees', 1: 'Beetles', 2: 'Butterfly', 3: 'Cicada', 4: 'Dragonfly', 5: 'Grasshopper', 6: 'Moth', 7: 'Scorpion', 8: 'Snail', 9: 'Spider'}
 
     # Prepare the results as a dictionary
     resultados_dict = {}
@@ -42,7 +42,13 @@ def predict(img_rel_path):
         probabilidad = round(j * 100, 2)
         resultados_dict[clase] = probabilidad
 
-    return resultados_dict
+    # Sort the dictionary by values (probabilities) in descending order
+    sorted_resultados = dict(sorted(resultados_dict.items(), key=lambda item: item[1], reverse=True))
+
+    # Get the top 5 results
+    top_5_resultados = {k: sorted_resultados[k] for k in list(sorted_resultados)[:5]}
+
+    return top_5_resultados
 
 
 
