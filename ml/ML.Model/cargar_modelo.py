@@ -46,9 +46,9 @@ def predict(img_rel_path):
     sorted_resultados = dict(sorted(resultados_dict.items(), key=lambda item: item[1], reverse=True))
 
     # Get the top 5 results
-    top_5_resultados = {k: sorted_resultados[k] for k in list(sorted_resultados)[:5]}
+    top_10_resultados = {k: sorted_resultados[k] for k in list(sorted_resultados)[:10]}
 
-    return top_5_resultados
+    return top_10_resultados
 
 
 
