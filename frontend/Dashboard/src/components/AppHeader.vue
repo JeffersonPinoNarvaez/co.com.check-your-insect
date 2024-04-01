@@ -41,10 +41,6 @@
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-        <li class="nav-item py-1">
-          <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
-        </li>
-        <AppHeaderDropdownAccnt />
       </CHeaderNav>
     </CContainer>
     <CContainer class="px-4" fluid>
