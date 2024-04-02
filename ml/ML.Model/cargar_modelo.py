@@ -53,21 +53,24 @@ def predict(img_rel_path):
 
 
 # Función para procesar datos con el modelo
-def procesar_datos(parametros):
-    print(parametros)
+def procesar_datos(parametros, ids):
+    for i in range(len(parametros)):
+        nombre_imagen = parametros[i][0]
+        extension = parametros[i][1].split('/')[1]  # Extraer la extensión de 'image/jpeg'
+        datos_bytea = parametros[i][2]
 
-    for parametro in parametros:
-        nombre_imagen = parametro[0]
-        extension = parametro[1].split('/')[1]  # Extraer la extensión de 'image/jpeg'
-        datos_bytea = parametro[2]
-    
-    # Reconstruir y guardar la imagen
-    ruta_imagen_guardada = reconstruir_imagen(datos_bytea, extension, nombre_imagen)
+        # Reconstruir y guardar la imagen
+        ruta_imagen_guardada = reconstruir_imagen(datos_bytea, extension, f'{nombre_imagen}_{ids[i]}')
 
-    # Luego, puedes pasar 'ruta_imagen_guardada' a tu función 'predict'
-    # Procesa los datos con el modelo y devuelve resultados
-    resultados = predict(ruta_imagen_guardada)
-    return resultados
+        # Luego, puedes pasar 'ruta_imagen_guardada' a tu función 'predict'
+        # Procesa los datos con el modelo y devuelve resultados
+        resultados = predict(ruta_imagen_guardada)
+
+        # Registrar los resultados en la base de datos
+        registrar_resultados_en_bd(resultados, ids[i])
+
+        # Actualizar la base de datos
+        actualizar_base_de_datos(resultados, ids[i])  # Se agregó 'resultados' como primer argumento
 
 def reconstruir_imagen(datos_bytea, extension, ruta_guardado):
     # Convertir datos bytea a una cadena de bytes
@@ -86,23 +89,22 @@ def reconstruir_imagen(datos_bytea, extension, ruta_guardado):
     return ruta_guardado_con_extension
 
 # Función para actualizar la base de datos con los resultados
-def actualizar_base_de_datos(resultados, ids):
-    print(resultados)
-    print(ids)
+def actualizar_base_de_datos(resultados, id):
     # Establece la conexión a PostgreSQL
     conexion = psycopg2.connect(dbname='insectid', user='admin', password='admin', host='34.85.192.56')
     cursor = conexion.cursor()
 
     # Actualiza la columna 'resultado' en la tabla con los resultados
-    for id in zip(ids):
-        cursor.execute('UPDATE "Galleries" SET "isProcessed" = true WHERE "Galleries"."Id" = %s', (id))
+    cursor.execute('UPDATE "Galleries" SET "isProcessed" = true WHERE "Galleries"."Id" = %s', (id,))
 
     # Confirma los cambios y cierra la conexión a la base de datos
     conexion.commit()
     cursor.close()
     conexion.close()
 
-def registrar_resultados_en_bd(resultados, galleries_entity_id):
+# Función para registrar resultados en la base de datos
+def registrar_resultados_en_bd(resultados, galleries_entity_ids):
+    print(galleries_entity_ids)
     # Convertir resultados a formato JSON
     resultados_json = json.dumps(resultados)
 
@@ -112,8 +114,8 @@ def registrar_resultados_en_bd(resultados, galleries_entity_id):
 
     try:
         # Modificar la consulta SQL para almacenar la cadena JSON
-        for id in zip(galleries_entity_id):
-            cursor.execute('INSERT INTO public."ResultClassification" ("GalleriesEntityId", "ResultsClassified") VALUES (%s, %s)', (id, resultados_json))
+
+        cursor.execute('INSERT INTO public."ResultClassification" ("GalleriesEntityId", "ResultsClassified") VALUES (%s, %s)', (galleries_entity_ids, resultados_json))
 
         # Confirmar los cambios y cerrar la conexión
         conexion.commit()
@@ -150,11 +152,7 @@ def ejecutar_modelo_si_hay_parametros_nuevos():
     # Verificar si hay nuevos parámetros
     if parametros:
         # Procesar los datos
-        resultados = procesar_datos(parametros)
-        # Registrar los resultados en la base de datos
-        registrar_resultados_en_bd(resultados, ids)
-        # Actualizar la base de datos
-        actualizar_base_de_datos(resultados, ids)
+        procesar_datos(parametros, ids)
 
 # Bucle infinito para mantener el script en ejecución
 while True:
