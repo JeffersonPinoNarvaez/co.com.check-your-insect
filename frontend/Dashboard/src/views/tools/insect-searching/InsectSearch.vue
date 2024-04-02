@@ -13,34 +13,37 @@
         <div class="card">
           <div class="card-body">
             <h3 class="card-title mb-4">Let's start easy...</h3>
-            <DropZone class="text-center drop-area" @file="loadFile" v-slot="{ dropZoneActive }">
+            <CAlert color="warning" v-if="warning.show" closeButton> {{ warning.msg}} </CAlert>
+            <DropZone :class="{ 'disabled-card': isDisabled }" class="text-center drop-area" @file="loadFile" v-slot="{ dropZoneActive }">
               <label for="file-input">
                 <span v-if="dropZoneActive">
-                  <span>Drop Them Here</span>
-                  <span class="smaller">to add them</span>
+                  <span>Drop It Here</span>
+                  <span class="smaller">to add it</span>
                 </span>
                 <span v-else>
-                  <span>Drag Your Files Here</span>
+                  <span>Drag Your File Here</span>
                   <span class="smaller">
-                    or <strong><em>click here</em></strong> to select files
+                    or <strong><em>click here</em></strong> to select a file
                   </span>
                 </span>
 
                 <input type="file" id="file-input" multiple @change="onInputChange" />
               </label>
-              <ul v-if="Object.keys(files).length > 0">
-                <FilePreview :key="files.id" :file="files" @remove="removeFile" />
+              <ul v-if="Object.keys(file).length > 0" class="center-list">
+                <FilePreview :key="file.id" :file="file" @remove="removeFile" />
               </ul>
+
             </DropZone>
-            <button @click.prevent="uploadFiles" class="upload-button">Upload</button>
+            <button @click.prevent="uploadFiles" class="upload-button center" :disabled="isDisabled">
+              <CSpinner color="info" v-if="isDisabled" /> <span class="mt-4">{{loading}}</span></button>
           </div>
         </div>
         <!-- Step Two -->
-        <div class="card mt-4" v-if="showChart">          
+        <div class="card mt-4" v-if="showChart">
           <div class="card-body">
             <h3 class="card-title mb-4">Your results...</h3>
             <CChartBar :data="chartData" />
-          </div>        
+          </div>
         </div>
       </div>
     </div>
@@ -55,9 +58,12 @@ import DropZone from './DropZone.vue';
 import FilePreview from './FilePreview.vue';
 import { classifierImage } from '../../../services/search-insect';
 
-const { files, addFiles, removeFile, getFiles } = useFileList();
+const { file, addFiles, removeFile, getFiles } = useFileList();
 let showChart = ref(false);
 let resultsClassified = ref({});
+let isDisabled = ref(false);
+let loading = ref('Upload');
+let warning = ref({});
 
 
 const onInputChange = (e) => {
@@ -82,21 +88,33 @@ const blobToImage = (blob) => {
   })
 }
 
+
 const uploadFiles = async () => {
+
+  if (!Object.keys(file.value).length > 0) {
+    warning.value.msg = "Please select or drag a file to start searching."
+    warning.value.show = true;
+    return;
+  }
+
+  warning.value.msg = null;
+  warning.value.show = false;
+  isDisabled = true;
   showChart.value = false;
-
-  const myImage = new File([files.value.url], 'image', {
-      type: 'png',
-  });
-
-  // Create an object URL for the Blob
-  //const myImage = blobToImage(files.value.url)
-  console.log(myImage)
-  
+  loading = 'Processing image...';
   try {
-    const response = await classifierImage(myImage);
-    resultsClassified = JSON.parse(response.resultsClassified);
-    showChart.value = true;
+    const myImage = new File([file.value.url], 'image', {
+      type: 'png',
+    });
+    setTimeout(() => {
+      loading = 'Upload'
+      isDisabled = false
+      showChart.value = true;
+    }, 5000);
+
+    //const response = await classifierImage(myImage);
+    //resultsClassified = JSON.parse(response.resultsClassified);
+
   } catch (error) {
     console.error('classifier error:', error.message);
   }
@@ -106,7 +124,6 @@ const chartData = () => {
   const categories = [];
   const results = [];
   for (const key in resultsClassified) {
-    console.log(key)
     if (resultsClassified.hasOwnProperty(key)) {
       categories.push(key);
       results.push(resultsClassified[key]);
@@ -126,6 +143,18 @@ const chartData = () => {
 </script>
 
 <style scoped lang="stylus">
+.disabled-card {
+  opacity: 0.5; /* Example: Reduce opacity to visually indicate disabled state */
+  pointer-events: none; /* Disable mouse events on the card */
+}
+
+.center-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .drop-area {
   border: 2px dashed #ccc;
   border-radius: 20px;

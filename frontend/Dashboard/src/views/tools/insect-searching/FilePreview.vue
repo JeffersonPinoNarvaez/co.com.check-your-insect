@@ -1,7 +1,9 @@
 <template>
   <div :is="tag" class="file-preview">
     <button @click="removeFile" class="close-icon">&times;</button>
-    <img :src="file.url" :alt="file.file.name" :title="file.name" />
+     <div class="image-container">
+      <img :src="file.url" :alt="file.file.name" :title="file.name" />
+     </div>
     <span :class="statusClass" v-text="statusText"></span>
   </div>
 </template>
@@ -25,7 +27,6 @@ const statusText = {
 }[file.status];
 
 const removeFile = () => {
-  console.log("removeFile")
   emit('remove', file);
 };
 </script>
@@ -37,6 +38,21 @@ const removeFile = () => {
   position: relative;
   aspect-ratio: 1/1;
   overflow: hidden;
+
+  .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    object-fit: contain;
+  }
 
   img {
     width: 100%;

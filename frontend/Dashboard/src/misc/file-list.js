@@ -1,23 +1,18 @@
 import { ref } from 'vue'
 
 export default function () {
-	let files = ref([])
+	let file = ref([])
 
-	function addFiles(file) {
-		let newUploadableFiles = [...file].map((file) => new UploadableFile(file)).filter((file) => !fileExists(file.id))
-		files.value = Object.assign({}, newUploadableFiles[0])
-	}
-
-	function fileExists(otherId) {
-		if (Object.keys(files.value).length > 0)
-			return files.value.some(({ id }) => id === otherId)
+	function addFiles(items) {
+		let newUploadableFiles = [...items].map((item) => new UploadableFile(item))
+		file.value = Object.assign({}, newUploadableFiles[0])
 	}
 
 	function removeFile() {
-		files.value = {}
+		file.value = {}
 	}
 
-	return { files, addFiles, removeFile }
+	return { file, addFiles, removeFile }
 }
 
 class UploadableFile {
