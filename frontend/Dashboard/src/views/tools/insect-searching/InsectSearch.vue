@@ -88,6 +88,15 @@ const blobToImage = (blob) => {
   })
 }
 
+// Function to convert Blob URL to binary data
+async function convertBlobUrlToBinary(blobObj) {
+  const response = await fetch(blobObj.url);
+  const blob = await response.blob();
+  const formData = new FormData();
+  const file = new File([blob], 'hola.png', { type: "image/png"});
+  formData.append('file', file);
+  return formData
+}
 
 const uploadFiles = async () => {
 
@@ -102,20 +111,20 @@ const uploadFiles = async () => {
   isDisabled = true;
   showChart.value = false;
   loading = 'Processing image...';
-  try {
-    const myImage = new File([file.value.url], 'image', {
-      type: 'png',
-    });
-    setTimeout(() => {
-      loading = 'Upload'
-      isDisabled = false
-      showChart.value = true;
-    }, 5000);
 
-    //const response = await classifierImage(myImage);
-    //resultsClassified = JSON.parse(response.resultsClassified);
+  try {
+    const formData = await convertBlobUrlToBinary(file.value);
+    const aux =  await classifierImage(formData);
+    resultsClassified = JSON.parse(aux.data.resultsClassified)
+    isDisabled = false;
+    showChart.value = true;
+    loading = 'Upload';
 
   } catch (error) {
+    warning.value.msg = "Ups! Something went badly wrong : " + error;
+    warning.value.show = true;
+    isDisabled = false;
+    loading = 'Upload';
     console.error('classifier error:', error.message);
   }
 };
@@ -124,6 +133,7 @@ const chartData = () => {
   const categories = [];
   const results = [];
   for (const key in resultsClassified) {
+    
     if (resultsClassified.hasOwnProperty(key)) {
       categories.push(key);
       results.push(resultsClassified[key]);
