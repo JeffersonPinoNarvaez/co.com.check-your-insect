@@ -10,7 +10,7 @@ WORKDIR /app
 # Copia los archivos necesarios al contenedor
 COPY cargar_modelo.py .
 COPY requirements.txt .
-COPY model_01-0.94.h5 .
+COPY vgg16_bestmodel6.h5 .
 
 # Instala las dependencias
 RUN pip install --no-cache-dir -r requirements.txt
