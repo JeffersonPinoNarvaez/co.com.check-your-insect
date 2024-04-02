@@ -3,7 +3,7 @@ export const configurations = {
         host: 'http://localhost:8080',
         url: 'http://localhost:7089/api/',
         headers: {
-            content_type: 'application/json',
+            content_type: 'application/json; charset=utf-8; multipart/form-data',
         }
     },
     app: {

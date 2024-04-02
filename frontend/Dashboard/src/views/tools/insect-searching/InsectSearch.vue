@@ -70,13 +70,31 @@ const loadFile = (file) => {
   addFiles(file)
 }
 
+const blobToImage = (blob) => {
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(blob)
+    let img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(img)
+    }
+    img.src = url
+  })
+}
+
 const uploadFiles = async () => {
   showChart.value = false;
-  const formData = new FormData();
-  formData.append('file', files.value);
+
+  const myImage = new File([files.value.url], 'image', {
+      type: 'png',
+  });
+
+  // Create an object URL for the Blob
+  //const myImage = blobToImage(files.value.url)
+  console.log(myImage)
   
   try {
-    const response = await classifierImage(formData);
+    const response = await classifierImage(myImage);
     resultsClassified = JSON.parse(response.resultsClassified);
     showChart.value = true;
   } catch (error) {
