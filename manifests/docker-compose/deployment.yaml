@@ -1,0 +1,79 @@
+#ml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ml
+  template:
+    metadata:
+      labels:
+        io.kompose.network/manifests-secure-network: "true"
+        app: ml
+    spec:
+      containers:
+      - name: insectid-mlmodel
+        image: mlinsectacr.azurecr.io/cocomcheck-your-insect-ml:v1
+---
+#backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        io.kompose.network/manifests-secure-network: "true"
+        app: backend
+    spec:
+      containers:
+        - image: mlinsectacr.azurecr.io/cocomcheck-your-insect-backend:v1
+          name: insectid-apicontainer
+          ports:
+            - containerPort: 80
+              hostPort: 7089
+              protocol: TCP
+---
+#frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        io.kompose.network/manifests-secure-network: "true"
+        app: frontend
+    spec:
+      containers:
+        - image: mlinsectacr.azurecr.io/cocomcheck-your-insect-frontend:v1
+          name: insectid-frontendcontainer
+---
+#load balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-insect
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: frontend
