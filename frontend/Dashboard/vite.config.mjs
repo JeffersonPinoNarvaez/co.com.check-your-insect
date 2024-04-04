@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...env }
 
   return {
+    mode: 'production',
     plugins: [vue()],
     base: './',
     css: {
@@ -46,7 +47,7 @@ export default defineConfig(({ mode }) => {
       ],
     },
     server: {
-      host: '0.0.0.0', // Bind to all network interfaces
+      //host: '0.0.0.0', // Bind to all network interfaces
       port: 8080,
       proxy: {
         // https://vitejs.dev/config/server-options.html

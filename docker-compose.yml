@@ -7,7 +7,6 @@ services:
     container_name: insectid-mlmodel
     cap_drop:
       - SYS_ADMIN
-    #read_only: true
     networks:
       - secure-network
 
@@ -22,7 +21,6 @@ services:
       - ml
     cap_drop:
       - SYS_ADMIN
-    #read_only: true
     networks:
       - secure-network
 
@@ -35,7 +33,6 @@ services:
       - 8080:80
     cap_drop:
       - SYS_ADMIN
-    #read_only: true
     networks:
       - secure-network
 
