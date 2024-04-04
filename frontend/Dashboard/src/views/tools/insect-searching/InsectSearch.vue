@@ -30,7 +30,7 @@
                 <input type="file" id="file-input" multiple @change="onInputChange" />
               </label>
               <ul v-if="Object.keys(file).length > 0" class="center-list">
-                <FilePreview :key="file.id" :file="file" @remove="removeFile" />
+                <FilePreview :key="file.id" :file="file" @remove="remove" />
               </ul>
 
             </DropZone>
@@ -66,65 +66,92 @@ let loading = ref('Upload');
 let warning = ref({});
 
 
+const remove = () => {
+  warning.value.msg = null;
+  warning.value.show = false;
+  showChart.value = false;
+  removeFile()
+}
 const onInputChange = (e) => {
-  const newFiles = Array.from(e.target.files);
-  addFiles(newFiles);
+  warning.value.msg = null;
+  warning.value.show = false;
+  const file = Array.from(e.target.files);
+  const fileName = file[0].name; 
+  if (!checkFileType(fileName)) {
+    warning.value.msg = "Sorry paul, only .jpeg .png .jpg file extension are allowed.";
+    warning.value.show = true;
+    e.target.value = null
+    return;
+  }
+  addFiles(file);
   e.target.value = null;
 };
 
+const checkFileType = (fileName) => {
+  const allowedTypes = ['jpeg', 'png', 'jpg'];
+  const fileExtension = fileName.slice(fileName.lastIndexOf('.') + 1);
+  if (!allowedTypes.includes(fileExtension)) return false
+  return true
+}
+
 const loadFile = (file) => {
-  addFiles(file)
-}
-
-const blobToImage = (blob) => {
-  return new Promise(resolve => {
-    const url = URL.createObjectURL(blob)
-    let img = new Image()
-    img.onload = () => {
-      URL.revokeObjectURL(url)
-      resolve(img)
-    }
-    img.src = url
-  })
-}
-
-// Function to convert Blob URL to binary data
-async function convertBlobUrlToBinary(blobObj) {
-  const response = await fetch(blobObj.url);
-  const blob = await response.blob();
-  const formData = new FormData();
-  const file = new File([blob], 'hola.png', { type: "image/png"});
-  formData.append('file', file);
-  return formData
-}
-
-const uploadFiles = async () => {
-
-  if (!Object.keys(file.value).length > 0) {
-    warning.value.msg = "Please select or drag a file to start searching."
+  warning.value.msg = null;
+  warning.value.show = false;
+  const fileName = file[0].name; 
+  if (!checkFileType(fileName)) {
+    warning.value.msg = "Sorry paul, only .jpeg .png .jpg file extension are allowed.";
     warning.value.show = true;
+    file = {}
     return;
   }
 
-  warning.value.msg = null;
-  warning.value.show = false;
-  isDisabled = true;
-  showChart.value = false;
-  loading = 'Processing image...';
+  addFiles(file)
+}
 
+async function convertBlobUrlToFormData(blobObj) {
   try {
-    const formData = await convertBlobUrlToBinary(file.value);
-    const aux =  await classifierImage(formData);
-    resultsClassified = JSON.parse(aux.data.resultsClassified)
-    isDisabled = false;
+    const response = await fetch(blobObj.url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const formData = new FormData();
+    const file = new File([blob], blobObj.file.name, { type: blobObj.file.type });
+    formData.append('file', file);
+    
+    return formData;
+  } catch (error) {
+    console.error('Error converting Blob URL to binary:', error.message);
+    throw error;
+  }
+}
+
+const uploadFiles = async () => {
+  try {
+    if (!Object.keys(file.value).length > 0) {
+      warning.value.msg = "Please select or drag a file to start searching.";
+      warning.value.show = true;
+      return;
+    }
+
+    warning.value.msg = null;
+    warning.value.show = false;
+    isDisabled.value = true;
+    showChart.value = false;
+    loading = 'Processing image...';
+
+    const formData = await convertBlobUrlToFormData(file.value);
+    const response = await classifierImage(formData);
+    resultsClassified = JSON.parse(response.data.resultsClassified);
+    isDisabled.value = false;
     showChart.value = true;
     loading = 'Upload';
-
   } catch (error) {
-    warning.value.msg = "Ups! Something went badly wrong : " + error;
-    warning.value.show = true;
-    isDisabled = false;
+    isDisabled.value = false; 
     loading = 'Upload';
+    warning.value.msg = "Ups! Something went badly wrong : " + error;    
+    warning.value.show = true;       
     console.error('classifier error:', error.message);
   }
 };
