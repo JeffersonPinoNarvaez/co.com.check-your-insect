@@ -10,7 +10,7 @@ export const configurations = {
         categories: [
             {
                 name: 'Bees',
-                coverPicture: 'src/assets/images/categories/bee.png',
+                coverPicture: 'assets/images/categories/bee.png',
                 facts: [
                     'Bees are important pollinators, helping to fertilize plants and crops.',
                     'They communicate through intricate dances known as the waggle dance.',
@@ -21,7 +21,7 @@ export const configurations = {
             },
             {
                 name: 'Beetles',
-                coverPicture: 'src/assets/images/categories/beetle.png',
+                coverPicture: 'assets/images/categories/beetle.png',
                 facts: [
                     'Beetles make up the largest group of insects, with over 350,000 species identified.',
                     'They come in a wide range of shapes, sizes, and colors, from tiny to large and dull to vibrant.',
@@ -32,7 +32,7 @@ export const configurations = {
             },
             {
                 name: 'Butterflies',
-                coverPicture: 'src/assets/images/categories/butterfly.png',
+                coverPicture: 'assets/images/categories/butterfly.png',
                 facts: [
                     'Butterflies taste with their feet, using chemoreceptors to detect the presence of food.',
                     'Their wings are covered in tiny scales, which give them their vibrant colors and patterns.',
@@ -43,7 +43,7 @@ export const configurations = {
             },
             {
                 name: 'Cicadas',
-                coverPicture: 'src/assets/images/categories/cicadas.png',
+                coverPicture: 'assets/images/categories/cicadas.png',
                 facts: [
                     'Cicadas are known for their loud, buzzing calls, which can reach up to 120 decibels.',
                     'They spend most of their lives underground as nymphs, feeding on plant roots.',
@@ -54,7 +54,7 @@ export const configurations = {
             },
             {
                 name: 'Dragonflies',
-                coverPicture: 'src/assets/images/categories/dragonflies.png',
+                coverPicture: 'assets/images/categories/dragonflies.png',
                 facts: [
                     'Dragonflies have been around for over 300 million years, making them one of the oldest insect groups on Earth.',
                     'They are expert hunters, capable of catching prey in mid-air with their sharp mandibles.',
@@ -65,7 +65,7 @@ export const configurations = {
             },
             {
                 name: 'Grasshopper',
-                coverPicture: 'src/assets/images/categories/grasshopper.png',
+                coverPicture: 'assets/images/categories/grasshopper.png',
                 facts: [
                     'Grasshoppers are known for their incredible jumping abilities, with some species capable of leaping up to 20 times their body length.',
                     'They produce sound by rubbing their hind legs against their wings, creating a distinctive chirping noise.',
@@ -76,7 +76,7 @@ export const configurations = {
             },
             {
                 name: 'Moth',
-                coverPicture: 'src/assets/images/categories/moth.png',
+                coverPicture: 'assets/images/categories/moth.png',
                 facts: [
                     'Moths are nocturnal insects, typically active at night and resting during the day.',
                     'They are attracted to light sources, which can sometimes lead them to be considered pests in urban areas.',
@@ -87,7 +87,7 @@ export const configurations = {
             },
             {
                 name: 'Scorpion',
-                coverPicture: 'src/assets/images/categories/scorpion.png',
+                coverPicture: 'assets/images/categories/scorpion.png',
                 facts: [
                     'Scorpions are ancient arachnids, with fossils dating back millions of years.',
                     'They are equipped with venomous stingers located at the end of their tails, which they use to immobilize prey and defend themselves.',
@@ -98,7 +98,7 @@ export const configurations = {
             },
             {
                 name: 'Snail',
-                coverPicture: 'src/assets/images/categories/snail.png',
+                coverPicture: 'assets/images/categories/snail.png',
                 facts: [
                     'Snails are gastropod mollusks, characterized by their spiral shells and slow-moving behavior.',
                     'They have a unique muscular foot that they use to glide over surfaces, leaving behind a trail of mucus.',
@@ -109,7 +109,7 @@ export const configurations = {
             },
             {
                 name: 'Spider',
-                coverPicture: 'src/assets/images/categories/spider.png',
+                coverPicture: 'assets/images/categories/spider.png',
                 facts: [
                     'Spiders are arachnids, not insects, and are characterized by their eight legs and ability to produce silk.',
                     'They use silk to construct webs for catching prey, as well as for building shelters and egg sacs.',

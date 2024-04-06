@@ -31,19 +31,19 @@ export default {
         {
           name: 'Santiago Aponte',
           role: 'Backend Dev',
-          image: 'src/assets/images/team/santiago.png',
+          image: 'assets/images/team/santiago.png',
           github: 'https://github.com/SantiagoAponte'
         },
         {
           name: 'Miguel Angel',
           role: 'ML Designer',
-          image: 'src/assets/images/team/miguel.png',
+          image: 'assets/images/team/miguel.png',
           github: 'https://github.com/Mikepa22'
         },
         {
           name: 'Jefferson Pino',
           role: 'Frontend Dev',
-          image: 'src/assets/images/team/jefferson.jpg',
+          image: 'assets/images/team/jefferson.jpg',
           github: 'https://github.com/JeffersonPinoNarvaez'
         }
       ]
