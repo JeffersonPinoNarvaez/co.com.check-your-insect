@@ -1,0 +1,42 @@
+#revision
+version: "3.4"
+services:
+  ml:
+    build:
+      context: ./ml/ML.Model
+      dockerfile: Dockerfile
+    container_name: insectid-mlmodel
+    cap_drop:
+      - SYS_ADMIN
+    networks:
+      - secure-network
+
+  backend:
+    build:
+      context: ./backend/API.InsectID
+      dockerfile: ./API.InsectID/Dockerfile
+    container_name: insectid-apicontainer
+    ports:
+      - 7089:80
+    depends_on:
+      - ml
+    cap_drop:
+      - SYS_ADMIN
+    networks:
+      - secure-network
+
+  frontend:
+    build:
+      context: ./frontend/Dashboard
+      dockerfile: Dockerfile
+    container_name: insectid-frontendcontainer
+    ports:
+      - 8080:80
+    cap_drop:
+      - SYS_ADMIN
+    networks:
+      - secure-network
+
+networks:
+  secure-network:
+    driver: bridge
